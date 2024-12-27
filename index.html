@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            text-align: center;
+            background: url('tutu.png') no-repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: brightness(0.4);
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff5c8a;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        input, button, select {
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        input, select {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #ff5c8a;
+        }
+
+        button {
+            background-color: #ff5c8a;
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        button:hover {
+            background-color: #e14a70;
+        }
+
+        .checkbox-container {
+            display: flex;
+            justify-content: space-between;
+            color: #ddd;
+            margin-top: 10px;
+        }
+
+        .checkbox-container label {
+            font-size: 14px;
+        }
+
+        .output {
+            margin-top: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            word-wrap: break-word;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .author {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generator</h1>
+
+        <input type="text" id="prefix" placeholder="Enter Gmail prefix" />
+        <input type="text" id="domain" value="gmail.com" placeholder="Enter domain" />
+        <input type="number" id="passwordLength" value="12" min="6" max="30" placeholder="Password length" />
+        
+        <div class="checkbox-container">
+            <label>
+                <input type="checkbox" id="includeUppercase"> Uppercase
+            </label>
+            <label>
+                <input type="checkbox" id="includeNumbers"> Numbers
+            </label>
+            <label>
+                <input type="checkbox" id="includeSpecialChars"> Special Chars
+            </label>
+        </div>
+
+        <input type="text" id="nickname" placeholder="Enter nickname" />
+        
+        <div class="checkbox-container">
+            <label>
+                <input type="checkbox" id="includeBirthday"> Include Birthday
+            </label>
+        </div>
+
+        <div id="birthdayFields" style="display:none;">
+            <input type="number" id="birthYear" placeholder="Year (YYYY)" min="1900" max="2024" />
+            <input type="number" id="birthMonth" placeholder="Month (1-12)" min="1" max="12" />
+            <input type="number" id="birthDay" placeholder="Day (1-31)" min="1" max="31" />
+        </div>
+
+        <select id="genderSelect">
+            <option value="none">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+
+        <button onclick="generate()">Generate</button>
+
+        <div class="output" id="output"></div>
+        
+        <button onclick="copyResult()">Copy result</button>
+
+        <div class="author">Created by pentikoraaa</div>
+    </div>
+
+    <script>
+        function generate() {
+            const prefix = document.getElementById("prefix").value || "user";
+            const domain = document.getElementById("domain").value || "gmail.com";
+            const passwordLength = parseInt(document.getElementById("passwordLength").value, 10) || 12;
+            const includeUppercase = document.getElementById("includeUppercase").checked;
+            const includeNumbers = document.getElementById("includeNumbers").checked;
+            const includeSpecialChars = document.getElementById("includeSpecialChars").checked;
+            const nickname = document.getElementById("nickname").value || "";
+            const includeBirthday = document.getElementById("includeBirthday").checked;
+            const gender = document.getElementById("genderSelect").value;
+
+            const randomNumbers = Math.floor(Math.random() * 10000);
+            const email = `${prefix}${randomNumbers}@${domain}`;
+
+            const lowerCaseChars = "abcdefghijklmnopqrstuvwxyz";
+            const upperCaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const numberChars = "0123456789";
+            const specialChars = "!@#$%^&*()";
+
+            let characters = lowerCaseChars;
+            if (includeUppercase) characters += upperCaseChars;
+            if (includeNumbers) characters += numberChars;
+            if (includeSpecialChars) characters += specialChars;
+
+            let password = "";
+            for (let i = 0; i < passwordLength; i++) {
+                password += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            let generatedNickname = nickname;
+            if (!nickname) {
+                generatedNickname = "user" + randomNumbers;
+            }
+
+            let birthdayInfo = "";
+            if (includeBirthday) {
+                const birthYear = document.getElementById("birthYear").value || "";
+                const birthMonth = document.getElementById("birthMonth").value || "";
+                const birthDay = document.getElementById("birthDay").value || "";
+                if (birthYear && birthMonth && birthDay) {
+                    birthdayInfo = `Birthdate: ${birthYear}-${birthMonth}-${birthDay}`;
+                }
+            }
+
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = ` 
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Password:</strong> ${password}</p>
+                <p><strong>Nickname:</strong> ${generatedNickname}</p>
+                ${birthdayInfo ? `<p><strong>${birthdayInfo}</strong></p>` : ""}
+                <p><strong>Gender:</strong> ${gender !== "none" ? gender : "Not specified"}</p>
+            `;
+            outputDiv.dataset.email = email;
+            outputDiv.dataset.password = password;
+            outputDiv.dataset.nickname = generatedNickname;
+            outputDiv.dataset.birthday = birthdayInfo;
+            outputDiv.dataset.gender = gender !== "none" ? gender : "Not specified";
+        }
+
+        function copyResult() {
+            const outputDiv = document.getElementById("output");
+            const email = outputDiv.dataset.email || "";
+            const password = outputDiv.dataset.password || "";
+            const nickname = outputDiv.dataset.nickname || "";
+            const birthday = outputDiv.dataset.birthday || "";
+            const gender = outputDiv.dataset.gender || "";
+
+            const result = `Email: ${email}\nPassword: ${password}\nNickname: ${nickname}\n${birthday}\nGender: ${gender}`;
+            navigator.clipboard.writeText(result).then(() => {
+                alert("Result copied!");
+            }).catch(err => {
+                console.error("Error copying: ", err);
+            });
+        }
+
+        // Toggle birthday fields based on checkbox
+        document.getElementById("includeBirthday").addEventListener("change", function() {
+            const birthdayFields = document.getElementById("birthdayFields");
+            birthdayFields.style.display = this.checked ? "block" : "none";
+        });
+    </script>
+</body>
+</html>
